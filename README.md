@@ -4,7 +4,7 @@ This is a responsive task manager application built with React.js and styled wit
 
 ## Live Demo
 
-[Link to your deployed application]
+[View Live Demo](https://cheery-arithmetic-cdc83d.netlify.app)
 
 ## Screenshots
 
@@ -86,9 +86,9 @@ The application will be available at `http://localhost:5173`.
 
 ## Deployment
 
-This application is deployed on [Your Hosting Service, e.g., Vercel, Netlify].
+This application is deployed on Netlify.
 
-**Live URL:** [Add your deployed application URL here]
+**Live URL:** [https://cheery-arithmetic-cdc83d.netlify.app]
 
 ## Author
 
