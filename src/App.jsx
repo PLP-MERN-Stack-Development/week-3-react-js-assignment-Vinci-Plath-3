@@ -1,72 +1,75 @@
-import { useState } from 'react';
-import './App.css';
+import { BrowserRouter as Router, Routes, Route, Outlet, useLocation } from 'react-router-dom';
+import { ThemeProvider } from './context/ThemeContext';
+import { Toaster } from 'react-hot-toast';
+import { motion, AnimatePresence } from 'framer-motion';
 
-// Import your components here
-// import Button from './components/Button';
-// import Navbar from './components/Navbar';
-// import Footer from './components/Footer';
-// import TaskManager from './components/TaskManager';
+import Navbar from './components/Navbar';
+import HomePage from './pages/HomePage';
+import TasksPage from './pages/TasksPage';
+import ApiDataPage from './pages/ApiDataPage';
+
+const Layout = () => {
+  const location = useLocation();
+  return (
+    <div className="min-h-screen text-gray-900 dark:text-white bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 transition-colors duration-200">
+      <Navbar />
+      <main className="pt-16">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={location.pathname}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.2, ease: "easeInOut" }}
+            className="min-h-[calc(100vh-4rem)]"
+          >
+            <Outlet />
+          </motion.div>
+        </AnimatePresence>
+      </main>
+    </div>
+  );
+};
 
 function App() {
-  const [count, setCount] = useState(0);
-
   return (
-    <div className="min-h-screen bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
-      {/* Navbar component will go here */}
-      <header className="bg-white dark:bg-gray-800 shadow">
-        <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-          <h1 className="text-3xl font-bold">PLP Task Manager</h1>
-        </div>
-      </header>
-
-      <main className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-        <div className="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg p-6">
-          <div className="flex flex-col items-center justify-center">
-            <p className="text-lg mb-4">
-              Edit <code className="font-mono bg-gray-200 dark:bg-gray-700 p-1 rounded">src/App.jsx</code> and save to test HMR
-            </p>
-            
-            <div className="flex items-center gap-4 my-4">
-              <button
-                onClick={() => setCount((count) => count - 1)}
-                className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition-colors"
-              >
-                -
-              </button>
-              <span className="text-xl font-bold">{count}</span>
-              <button
-                onClick={() => setCount((count) => count + 1)}
-                className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition-colors"
-              >
-                +
-              </button>
-            </div>
-
-            <p className="text-gray-500 dark:text-gray-400 mt-4">
-              Implement your TaskManager component here
-            </p>
-          </div>
-        </div>
-        
-        {/* API data display will go here */}
-        <div className="mt-8 bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg p-6">
-          <h2 className="text-2xl font-bold mb-4">API Data</h2>
-          <p className="text-gray-500 dark:text-gray-400">
-            Fetch and display data from an API here
-          </p>
-        </div>
-      </main>
-
-      {/* Footer component will go here */}
-      <footer className="bg-white dark:bg-gray-800 shadow mt-auto">
-        <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-          <p className="text-center text-gray-500 dark:text-gray-400">
-            © {new Date().getFullYear()} PLP Task Manager. All rights reserved.
-          </p>
-        </div>
-      </footer>
-    </div>
+    <ThemeProvider>
+      <Toaster
+        position="bottom-right"
+        toastOptions={{
+          className: '!bg-gray-800/90 text-white shadow-xl !rounded-xl backdrop-blur-sm',
+          style: {
+            background: 'rgba(30, 41, 59, 0.9)',
+            color: '#fff',
+            backdropFilter: 'blur(8px)',
+            border: '1px solid rgba(255, 255, 255, 0.08)',
+            padding: '0.75rem 1rem',
+            maxWidth: '24rem'
+          },
+          success: {
+            iconTheme: {
+              primary: '#10b981',
+              secondary: '#fff',
+            },
+          },
+          error: {
+            iconTheme: {
+              primary: '#ef4444',
+              secondary: '#fff',
+            },
+          },
+        }}
+      />
+      <Routes>
+        <Route path="/" element={<Layout />}>
+          <Route index element={<HomePage />} />
+          <Route path="tasks" element={<TasksPage />} />
+          <Route path="api-data" element={<ApiDataPage />} />
+          <Route path="*" element={<div>Page not found</div>} />
+        </Route>
+      </Routes>
+    </ThemeProvider>
   );
 }
 
-export default App; 
+export default App;

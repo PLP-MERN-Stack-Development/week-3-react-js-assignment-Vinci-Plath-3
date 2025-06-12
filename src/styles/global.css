@@ -1,0 +1,93 @@
+/* Global Styles */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Abstract shapes for background */
+.abstract-shape {
+  position: absolute;
+  border-radius: 50%;
+  opacity: 0.1;
+  filter: blur(40px);
+  z-index: -1;
+}
+
+.shape-1 {
+  width: 300px;
+  height: 300px;
+  background: #5C6BC0;
+  top: -150px;
+  right: -100px;
+}
+
+.shape-2 {
+  width: 400px;
+  height: 400px;
+  background: #26A69A;
+  bottom: -200px;
+  left: -150px;
+}
+
+.shape-3 {
+  width: 250px;
+  height: 250px;
+  background: #5C6BC0;
+  top: 50%;
+  right: 10%;
+}
+
+/* Glassmorphism effect */
+.glass-card {
+  background: rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Dark theme background */
+.dark-theme-bg {
+  background: linear-gradient(135deg, #0F2027 0%, #203A43 100%);
+  min-height: 100vh;
+}
+
+/* Subtle wave pattern */
+.wave-pattern {
+  opacity: 0.03;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: 
+    radial-gradient(circle at 10% 20%, #5C6BC0 0%, transparent 20%),
+    radial-gradient(circle at 90% 80%, #26A69A 0%, transparent 20%),
+    radial-gradient(circle at 30% 50%, #5C6BC0 0%, transparent 25%),
+    radial-gradient(circle at 70% 30%, #26A69A 0%, transparent 25%);
+  background-size: 400% 400%;
+  z-index: -1;
+}
+
+/* Particle container for API page */
+.particles-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  z-index: -1;
+}
+
+.particle {
+  position: absolute;
+  background: rgba(38, 166, 154, 0.3);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .shape-1, .shape-2, .shape-3 {
+    display: none;
+  }
+}

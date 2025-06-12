@@ -1,24 +1,26 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { motion } from 'framer-motion';
 
 /**
  * Button component with different variants
  * @param {Object} props - Component props
- * @param {string} props.variant - Button variant (primary, secondary, danger)
- * @param {string} props.size - Button size (sm, md, lg)
- * @param {boolean} props.disabled - Whether the button is disabled
- * @param {function} props.onClick - Click handler function
- * @param {React.ReactNode} props.children - Button content
+ * @param {string} [variant='primary'] - Button variant (primary, secondary, danger, success, warning)
+ * @param {string} [size='md'] - Button size (sm, md, lg)
+ * @param {boolean} [disabled=false] - Whether the button is disabled
+ * @param {function} [onClick=() => {}] - Click handler function
+ * @param {React.ReactNode} children - Button content
+ * @param {string} [className=''] - Additional CSS classes
  * @returns {JSX.Element} - Button component
  */
-const Button = ({ 
-  variant = 'primary', 
-  size = 'md', 
-  disabled = false, 
-  onClick, 
+const Button = ({
+  variant = 'primary',
+  size = 'md',
+  disabled = false,
+  onClick = () => {},
   children,
   className = '',
-  ...rest 
+  ...rest
 }) => {
   // Base classes
   const baseClasses = 'inline-flex items-center justify-center font-medium rounded focus:outline-none focus:ring-2 focus:ring-offset-2 transition-colors';
@@ -34,26 +36,39 @@ const Button = ({
   
   // Size classes
   const sizeClasses = {
-    sm: 'px-2 py-1 text-sm',
-    md: 'px-4 py-2',
-    lg: 'px-6 py-3 text-lg',
+    sm: 'px-4 py-2 text-sm',
+    md: 'px-6 py-2.5 text-base',
+    lg: 'px-8 py-3.5 text-lg',
   };
   
-  // Disabled classes
-  const disabledClasses = disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer';
-  
   // Combine all classes
-  const buttonClasses = `${baseClasses} ${variantClasses[variant] || variantClasses.primary} ${sizeClasses[size] || sizeClasses.md} ${disabledClasses} ${className}`;
-  
+  const buttonClasses = [
+    baseClasses,
+    variantClasses[variant] || variantClasses.primary,
+    sizeClasses[size] || sizeClasses.md,
+    disabled ? 'opacity-50 cursor-not-allowed' : 'hover:scale-[1.02] active:scale-[0.98]',
+    className
+  ].filter(Boolean).join(' ');
+
+  // Handle click with disabled state
+  const handleClick = (e) => {
+    if (!disabled && onClick) {
+      onClick(e);
+    }
+  };
+
   return (
-    <button
+    <motion.button
+      type="button"
       className={buttonClasses}
+      whileTap={!disabled ? { scale: 0.98 } : {}}
+      whileHover={!disabled ? { y: -1 } : {}}
       disabled={disabled}
-      onClick={onClick}
+      onClick={handleClick}
       {...rest}
     >
-      {children}
-    </button>
+      <span className="relative z-10">{children}</span>
+    </motion.button>
   );
 };
 
@@ -66,4 +81,4 @@ Button.propTypes = {
   className: PropTypes.string,
 };
 
-export default Button; 
+export default Button;

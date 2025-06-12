@@ -1,168 +1,208 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import Button from './Button';
+import { useLocalStorageTasks, PRIORITY } from '../hooks/useLocalStorageTasks';
+import EmptyState from './EmptyState';
+import PriorityBadge from './PriorityBadge';
 
-/**
- * Custom hook for managing tasks with localStorage persistence
- */
-const useLocalStorageTasks = () => {
-  // Initialize state from localStorage or with empty array
-  const [tasks, setTasks] = useState(() => {
-    const savedTasks = localStorage.getItem('tasks');
-    return savedTasks ? JSON.parse(savedTasks) : [];
-  });
-
-  // Update localStorage when tasks change
-  useEffect(() => {
-    localStorage.setItem('tasks', JSON.stringify(tasks));
-  }, [tasks]);
-
-  // Add a new task
-  const addTask = (text) => {
-    if (text.trim()) {
-      setTasks([
-        ...tasks,
-        {
-          id: Date.now(),
-          text,
-          completed: false,
-          createdAt: new Date().toISOString(),
-        },
-      ]);
-    }
-  };
-
-  // Toggle task completion status
-  const toggleTask = (id) => {
-    setTasks(
-      tasks.map((task) =>
-        task.id === id ? { ...task, completed: !task.completed } : task
-      )
-    );
-  };
-
-  // Delete a task
-  const deleteTask = (id) => {
-    setTasks(tasks.filter((task) => task.id !== id));
-  };
-
-  return { tasks, addTask, toggleTask, deleteTask };
-};
-
-/**
- * TaskManager component for managing tasks
- */
 const TaskManager = () => {
   const { tasks, addTask, toggleTask, deleteTask } = useLocalStorageTasks();
   const [newTaskText, setNewTaskText] = useState('');
+  const [priority, setPriority] = useState(PRIORITY.MEDIUM);
   const [filter, setFilter] = useState('all');
 
-  // Filter tasks based on selected filter
   const filteredTasks = tasks.filter((task) => {
     if (filter === 'active') return !task.completed;
     if (filter === 'completed') return task.completed;
-    return true; // 'all' filter
+    return true;
   });
 
-  // Handle form submission
   const handleSubmit = (e) => {
     e.preventDefault();
-    addTask(newTaskText);
-    setNewTaskText('');
+    if (newTaskText.trim()) {
+      addTask(newTaskText, priority);
+      setNewTaskText('');
+      setPriority(PRIORITY.MEDIUM);
+    }
   };
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-      <h2 className="text-2xl font-bold mb-6">Task Manager</h2>
+    <div className="bg-white/50 dark:bg-gray-800/50 backdrop-blur-xl shadow-lg rounded-2xl p-6 ring-1 ring-black ring-opacity-5">
+      <h2 className="text-2xl font-bold mb-6 text-center">Task Manager</h2>
 
-      {/* Task input form */}
       <form onSubmit={handleSubmit} className="mb-6">
-        <div className="flex gap-2">
+        <div className="flex flex-col sm:flex-row gap-3">
           <input
             type="text"
             value={newTaskText}
             onChange={(e) => setNewTaskText(e.target.value)}
             placeholder="Add a new task..."
-            className="flex-grow px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600"
+            className="flex-grow px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white/70 dark:bg-gray-700/70 border-gray-300 dark:border-gray-600"
           />
-          <Button type="submit" variant="primary">
+          <select
+            value={priority}
+            onChange={(e) => setPriority(e.target.value)}
+            className="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white/70 dark:bg-gray-700/70 border-gray-300 dark:border-gray-600"
+          >
+            <option value={PRIORITY.LOW}>Low Priority</option>
+            <option value={PRIORITY.MEDIUM}>Medium Priority</option>
+            <option value={PRIORITY.HIGH}>High Priority</option>
+          </select>
+          <Button type="submit" variant="primary" className="whitespace-nowrap">
             Add Task
           </Button>
         </div>
       </form>
 
-      {/* Filter buttons */}
-      <div className="flex gap-2 mb-4">
-        <Button
-          variant={filter === 'all' ? 'primary' : 'secondary'}
-          size="sm"
-          onClick={() => setFilter('all')}
-        >
-          All
-        </Button>
-        <Button
-          variant={filter === 'active' ? 'primary' : 'secondary'}
-          size="sm"
-          onClick={() => setFilter('active')}
-        >
-          Active
-        </Button>
-        <Button
-          variant={filter === 'completed' ? 'primary' : 'secondary'}
-          size="sm"
-          onClick={() => setFilter('completed')}
-        >
-          Completed
-        </Button>
-      </div>
-
-      {/* Task list */}
-      <ul className="space-y-2">
-        {filteredTasks.length === 0 ? (
-          <li className="text-gray-500 dark:text-gray-400 text-center py-4">
-            No tasks found
-          </li>
-        ) : (
-          filteredTasks.map((task) => (
-            <li
-              key={task.id}
-              className="flex items-center justify-between p-3 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 dark:border-gray-700"
+      {tasks.length === 0 ? (
+        <EmptyState filter={filter} />
+      ) : (
+        <>
+          <motion.div 
+            className="flex justify-center gap-2 mb-6"
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3 }}
+          >
+            <Button
+              variant={filter === 'all' ? 'primary' : 'secondary'}
+              onClick={() => setFilter('all')}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
             >
-              <div className="flex items-center gap-3">
-                <input
-                  type="checkbox"
-                  checked={task.completed}
-                  onChange={() => toggleTask(task.id)}
-                  className="h-5 w-5 text-blue-600 rounded focus:ring-blue-500"
-                />
-                <span
-                  className={`${
-                    task.completed ? 'line-through text-gray-500 dark:text-gray-400' : ''
-                  }`}
-                >
-                  {task.text}
-                </span>
-              </div>
-              <Button
-                variant="danger"
-                size="sm"
-                onClick={() => deleteTask(task.id)}
-                aria-label="Delete task"
-              >
-                Delete
-              </Button>
-            </li>
-          ))
-        )}
-      </ul>
+              All
+            </Button>
+            <Button
+              variant={filter === 'active' ? 'primary' : 'secondary'}
+              onClick={() => setFilter('active')}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              Active
+            </Button>
+            <Button
+              variant={filter === 'completed' ? 'primary' : 'secondary'}
+              onClick={() => setFilter('completed')}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              Completed
+            </Button>
+          </motion.div>
 
-      {/* Task stats */}
-      <div className="mt-6 text-sm text-gray-500 dark:text-gray-400">
-        <p>
-          {tasks.filter((task) => !task.completed).length} tasks remaining
-        </p>
-      </div>
+          <ul className="space-y-3">
+            <AnimatePresence mode="popLayout">
+              {filteredTasks.length === 0 ? (
+                <motion.li 
+                  key="empty-state"
+                  className="text-center py-4 text-gray-500 dark:text-gray-400"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <EmptyState filter={filter} />
+                </motion.li>
+              ) : (
+                filteredTasks.map((task, index) => (
+                  <motion.li 
+                    key={task.id}
+                    className="flex items-center justify-between p-3 bg-white/20 dark:bg-gray-900/20 rounded-lg"
+                    layout
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ 
+                      opacity: 1, 
+                      y: 0,
+                      scale: 1,
+                      transition: { 
+                        type: 'spring',
+                        stiffness: 500,
+                        damping: 30,
+                        delay: index * 0.05
+                      }
+                    }}
+                    exit={{ 
+                      opacity: 0, 
+                      x: 100,
+                      transition: { duration: 0.2 }
+                    }}
+                    whileHover={{ 
+                      scale: 1.01,
+                      boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)'
+                    }}
+                    transition={{
+                      type: 'spring',
+                      stiffness: 500,
+                      damping: 30,
+                      delay: index * 0.05
+                    }}
+                  >
+                    <div className="flex items-center gap-3">
+                      <motion.div 
+                        whileTap={{ scale: 0.9 }}
+                        whileHover={{ scale: 1.1 }}
+                        className="flex items-center"
+                      >
+                        <input
+                          type="checkbox"
+                          checked={task.completed}
+                          onChange={() => {
+                            setTimeout(() => toggleTask(task.id), 150);
+                          }}
+                          className="h-5 w-5 text-blue-600 rounded focus:ring-blue-500 border-gray-300 dark:border-gray-600 bg-transparent cursor-pointer"
+                        />
+                      </motion.div>
+                      <div className="flex flex-col">
+                        <motion.span 
+                          className={`${task.completed ? 'line-through text-gray-500 dark:text-gray-400' : ''}`}
+                          initial={{ x: 0 }}
+                          animate={{
+                            x: task.completed ? [0, 5, -5, 0] : 0,
+                          }}
+                          transition={{
+                            duration: 0.3,
+                            times: [0, 0.2, 0.8, 1],
+                          }}
+                        >
+                          {task.text}
+                        </motion.span>
+                        <motion.div
+                          initial={{ scale: 0.8, opacity: 0 }}
+                          animate={{ scale: 1, opacity: 1 }}
+                          transition={{ delay: 0.1 }}
+                        >
+                          <PriorityBadge priority={task.priority} className="mt-1" />
+                        </motion.div>
+                      </div>
+                    </div>
+                    <motion.div
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.9 }}
+                    >
+                      <Button 
+                        variant="danger" 
+                        size="sm" 
+                        onClick={() => {
+                          setTimeout(() => deleteTask(task.id), 200);
+                        }} 
+                        aria-label="Delete task"
+                      >
+                        Delete
+                      </Button>
+                    </motion.div>
+                  </motion.li>
+                ))
+              )}
+            </AnimatePresence>
+          </ul>
+
+          <div className="mt-6 text-sm text-gray-500 dark:text-gray-400 text-center">
+            <p>{tasks.filter((task) => !task.completed).length} tasks remaining</p>
+          </div>
+        </>
+      )}
     </div>
   );
 };
 
-export default TaskManager; 
+export default TaskManager;

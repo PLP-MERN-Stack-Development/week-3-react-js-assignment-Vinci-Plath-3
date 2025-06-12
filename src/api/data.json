@@ -1,0 +1,62 @@
+[
+  {
+    "id": 1,
+    "name": "Charo Wa Mae",
+    "email": "wamae@example.com",
+    "website": "wamae-designs.com"
+  },
+  {
+    "id": 2,
+    "name": " Bahathi Wa Kahindhi",
+    "email": "bahathi.k@example.com",
+    "website": "hathi-widgets.net"
+  },
+  {
+    "id": 3,
+    "name": "Kache Kundango",
+    "email": "kundango.k@example.com",
+    "website": "kundango-kundango.com"
+  },
+  {
+    "id": 4,
+    "name": "Diana Chea",
+    "email": "diana.c@example.com",
+    "website": "wonder-woman.io"
+  },
+  {
+    "id": 5,
+    "name": "Kadzo Gunga",
+    "email": "kadzo.g@example.com",
+    "website": "imf-mission.gov"
+  },
+  {
+    "id": 6,
+    "name": "Katana Kahindi",
+    "email": "katana.k@example.com",
+    "website": "kahindi.io"
+  },
+  {
+    "id": 7,
+    "name": "Zawadi Charo",
+    "email": "diana.c@example.com",
+    "website": "wonder-woman.io"
+  },
+  {
+    "id": 8,
+    "name": "Oyore Wa Gamba",
+    "email": "oyore.g@example.com",
+    "website": "gamba.inc"
+  },
+  {
+    "id": 9,
+    "name": "Awour Sharon",
+    "email": "awuor.s@example.com",
+    "website": "sharon.io"
+  },
+  {
+    "id": 10,
+    "name": "Disco Vunbi",
+    "email": "disco.v@example.com",
+    "website": "discovumbi.org"
+  }
+]
